@@ -14,7 +14,7 @@ function selectAllProducts(){
             values.push(value);
             // console.log(`Product: ${resp[i].product_name}`)
         }
-        console.log(values);
+
         console.table(["ID", "Product", "Category", "Price", "Stock"], values);
     })
 }
@@ -48,19 +48,22 @@ function start(){
     }])
     .then(function(answer){
         var selection = answer.selectQty;
-        console.log(selection);
+
         connection.query('SELECT * FROM products', function(err, resp){
-            console.log(resp[selection - 1].stock_quantity);
+
             if (err) throw err;
             if(selection <= resp[selection - 1].stock_quantity){
                 //update stock quantity
-                console.log(typeof(resp[selection-1].stock_quantity))
                 connection.query("UPDATE products SET ? WHERE ?",
                     [
                         { stock_quantity: (resp[selection - 1].stock_quantity - answer.selectQty)},
                     { item_id: answer.selectID}
                     ])
-
+                console.table([
+                    {Amount: `${answer.selectQty} qty.`,
+                    Product: resp[selection - 1].product_name,
+                    Price: `$${resp[selection - 1].price}`,Total: `$${resp[selection-1].price*answer.selectQty}`}
+                ])
             } else{
                 console.log("Insufficient quantity!")
             }
