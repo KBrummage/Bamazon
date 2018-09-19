@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 const cTable = require('console.table');
 var inquirer = require('inquirer');
-
+var keys = require('./keys.js');
 
 
 function selectAllProducts(){
@@ -19,22 +19,19 @@ function selectAllProducts(){
     })
 }
 
-var connection = mysql.createConnection({
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: 'California',
-    database: 'bamazon'
-})
+var connection = mysql.createConnection(keys)
 
 connection.connect(function(err){
     if (err) throw err;
     console.log('connected as id ' + connection.threadId);
-start();
+    selectAllProducts();
+
 })
 
+start();
+
 function start(){
-    selectAllProducts();
+   
 
     inquirer
     .prompt([{
@@ -47,17 +44,20 @@ function start(){
         message: 'Quanity to purchase:'
     }])
     .then(function(answer){
-        var selection = answer.selectQty;
-
+        var selectionQty = answer.selectQty;
+        var selectionID = answer.selectID;
         connection.query('SELECT * FROM products', function(err, resp){
 
             if (err) throw err;
-            if(selection <= resp[selection - 1].stock_quantity){
+            console.log(selectionQty + "<-- quantity selected");
+            console.log(selectionID + "<--selectionID");
+            console.log(resp[selectionID-1].stock_quantity+ "<--resp selection stock quantity");
+            if(selectionQty <= resp[selectionID-1].stock_quantity){
                 //update stock quantity
                 connection.query("UPDATE products SET ? WHERE ?",
                     [
-                        { stock_quantity: (resp[selection - 1].stock_quantity - answer.selectQty)},
-                    { item_id: answer.selectID}
+                        { stock_quantity: (resp[selectionID-1].stock_quantity - answer.selectQty)},
+                    { item_id: answer.selectID} 
                     ])
                 console.table([
                     {Amount: `${answer.selectQty} qty.`,
