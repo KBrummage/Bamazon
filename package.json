@@ -20,6 +20,7 @@
     "console.table": "^0.10.0",
     "inquirer": "^6.2.0",
     "mysql": "^2.16.0",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.4",
+    "promise": "^8.0.2"
   }
 }
